@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MemeZone 🔥</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header>
+    <h1>🔥 MemeZone</h1>
+    <p class="subtitle">El lugar donde los memes viven para siempre</p>
+  </header>
+
+  <main>
+    <div class="meme-card" id="memeCard">
+      <div class="meme-img-wrapper">
+        <img id="memeImg" src="" alt="Meme cargando..." />
+        <div class="loader" id="loader">⏳ Cargando meme...</div>
+      </div>
+      <div class="meme-info">
+        <h2 id="memeTitle">–</h2>
+        <div class="meme-meta">
+          <span id="memeAuthor">👤 –</span>
+          <span id="memeUps">⬆️ –</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="btnNext" onclick="fetchMeme()">🎲 Otro meme</button>
+      <button id="btnSave" onclick="saveMeme()">❤️ Guardar</button>
+    </div>
+
+    <div class="saved-section" id="savedSection">
+      <h3>❤️ Tus memes guardados</h3>
+      <div class="saved-grid" id="savedGrid"></div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Hecho con ❤️ y demasiado tiempo libre</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
