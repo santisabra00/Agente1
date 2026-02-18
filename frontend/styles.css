@@ -275,6 +275,9 @@ body {
   border-radius: 12px;
   font-size: 14px;
   line-height: 1.65;
+  overflow-x: auto;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .msg-bubble p + p { margin-top: 8px; }
