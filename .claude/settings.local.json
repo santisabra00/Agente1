@@ -5,7 +5,9 @@
       "Bash(git remote add:*)",
       "Bash(git --version)",
       "Bash(git add:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\n🔥 Primer commit: MemeZone app\n\nPágina de memes con diseño oscuro, consumo de API pública de memes,\nfuncionalidad para guardar favoritos en localStorage y navegación entre memes.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git commit -m \"$\\(cat <<''EOF''\n🔥 Primer commit: MemeZone app\n\nPágina de memes con diseño oscuro, consumo de API pública de memes,\nfuncionalidad para guardar favoritos en localStorage y navegación entre memes.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\n🧹 Limpieza: se elimina MemeZone para arrancar proyecto nuevo\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }
