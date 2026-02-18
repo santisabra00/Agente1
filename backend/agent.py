@@ -25,52 +25,40 @@ No das consejos de inversión directos, pero sí información objetiva y anális
 Usás emojis para hacer las respuestas más visuales y fáciles de leer.
 """
 
-def procesar_respuesta(respuesta):
-    """Procesa la respuesta de Claude y ejecuta tools si es necesario"""
-
-    if respuesta.stop_reason == "tool_use":
-        for bloque in respuesta.content:
-            if bloque.type == "tool_use":
-                nombre_tool = bloque.name
-                inputs_tool = bloque.input
-
-                resultado = ejecutar_tool(nombre_tool, inputs_tool)
-
-                agregar_mensaje("assistant", respuesta.content)
-                agregar_mensaje("user", [
-                    {
-                        "type": "tool_result",
-                        "tool_use_id": bloque.id,
-                        "content": resultado
-                    }
-                ])
-
-                respuesta_final = cliente.messages.create(
-                    model="claude-opus-4-5",
-                    max_tokens=1024,
-                    system=SYSTEM_PROMPT,
-                    tools=TOOLS,
-                    messages=obtener_historial()
-                )
-
-                return respuesta_final.content[0].text
-
-    return respuesta.content[0].text
-
-
 def chat(mensaje_usuario):
-    """Envía un mensaje y obtiene respuesta"""
+    """Envía un mensaje y obtiene respuesta, manejando múltiples tool calls"""
     agregar_mensaje("user", mensaje_usuario)
 
-    respuesta = cliente.messages.create(
-        model="claude-opus-4-5",
-        max_tokens=1024,
-        system=SYSTEM_PROMPT,
-        tools=TOOLS,
-        messages=obtener_historial()
-    )
+    while True:
+        respuesta = cliente.messages.create(
+            model="claude-opus-4-5",
+            max_tokens=1024,
+            system=SYSTEM_PROMPT,
+            tools=TOOLS,
+            messages=obtener_historial()
+        )
 
-    texto_respuesta = procesar_respuesta(respuesta)
-    agregar_mensaje("assistant", texto_respuesta)
+        # Si no hay más tools que ejecutar, devolvemos la respuesta final
+        if respuesta.stop_reason != "tool_use":
+            texto = respuesta.content[0].text
+            agregar_mensaje("assistant", texto)
+            return texto
 
-    return texto_respuesta
+        # Recolectar TODOS los tool_use de esta respuesta
+        tool_results = []
+        for bloque in respuesta.content:
+            if bloque.type == "tool_use":
+                resultado = ejecutar_tool(bloque.name, bloque.input)
+                tool_results.append({
+                    "type": "tool_result",
+                    "tool_use_id": bloque.id,
+                    "content": resultado
+                })
+
+        # Agregar la respuesta del asistente con todos los tool_use
+        agregar_mensaje("assistant", respuesta.content)
+
+        # Agregar TODOS los resultados en un solo mensaje de user
+        agregar_mensaje("user", tool_results)
+
+        # El while continúa para que Claude procese los resultados
