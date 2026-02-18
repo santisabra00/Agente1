@@ -79,6 +79,8 @@ function renderTextoPlano(texto) {
     if (t.startsWith('|')) {
       inTable = true;
       const cells = t.split('|').slice(1, -1).map(c => c.trim());
+      // Ignorar fila separadora |---|---|
+      if (cells.every(c => /^[-: ]+$/.test(c))) continue;
       tableBuf.push(cells);
       continue;
     } else if (inTable) { flushTable(); }
