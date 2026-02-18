@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📈 Agente Financiero</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="app">
+
+    <header>
+      <div class="header-content">
+        <div class="logo">📈</div>
+        <div>
+          <h1>Agente Financiero</h1>
+          <span class="status">● En línea</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="chat-container" id="chatContainer">
+      <div class="message bot">
+        <div class="avatar">📈</div>
+        <div class="bubble">
+          ¡Hola! Soy tu asistente financiero. Puedo ayudarte con:<br><br>
+          📊 Precios de acciones, ETFs y cripto<br>
+          🔍 Información fundamental de empresas<br>
+          ⚔️ Comparación entre activos<br><br>
+          ¿Qué querés consultar hoy?
+        </div>
+      </div>
+    </div>
+
+    <div class="suggestions">
+      <button onclick="enviarSugerencia('¿Cuál es el precio de Apple?')">🍎 Apple</button>
+      <button onclick="enviarSugerencia('¿Cómo está Bitcoin hoy?')">₿ Bitcoin</button>
+      <button onclick="enviarSugerencia('Compará SPY vs QQQ')">⚔️ SPY vs QQQ</button>
+      <button onclick="enviarSugerencia('Info fundamental de Tesla')">🚗 Tesla</button>
+    </div>
+
+    <div class="input-area">
+      <input
+        type="text"
+        id="inputMensaje"
+        placeholder="Preguntá sobre cualquier acción, ETF o cripto..."
+        autocomplete="off"
+      />
+      <button id="btnEnviar" onclick="enviarMensaje()">
+        <span>➤</span>
+      </button>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
