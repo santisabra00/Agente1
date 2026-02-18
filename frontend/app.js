@@ -310,6 +310,7 @@ function mostrarPantalla(nombre) {
   });
 
   if (nombre === 'mercados') cargarWatchlist();
+  if (nombre === 'portfolio') cargarPortfolio();
 }
 
 // ─── WATCHLIST ───────────────────────────────
@@ -381,4 +382,113 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.key === 'Enter') agregarDesdeInput();
     });
   }
+  const inputPfTicker = document.getElementById('pf-ticker');
+  if (inputPfTicker) {
+    inputPfTicker.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') agregarPosicion();
+    });
+  }
 });
+
+// ─── PORTFOLIO ────────────────────────────────
+async function cargarPortfolio() {
+  const container = document.getElementById('portfolioContainer');
+  const resumen = document.getElementById('portfolioResumen');
+  container.innerHTML = '<div class="wl-loading">Cargando portfolio...</div>';
+  resumen.innerHTML = '';
+
+  try {
+    const res = await fetch(`${BASE_URL}/portfolio`);
+    const data = await res.json();
+
+    // Resumen total
+    const gTotalClass = data.ganancia_total >= 0 ? 'var-green' : 'var-red';
+    const gTotalSign = data.ganancia_total >= 0 ? '+' : '';
+    resumen.innerHTML = `
+      <div class="pf-resumen">
+        <div class="pf-resumen-item">
+          <span class="pf-resumen-label">Valor actual</span>
+          <span class="pf-resumen-valor">$${data.total_actual.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+        </div>
+        <div class="pf-resumen-item">
+          <span class="pf-resumen-label">Invertido</span>
+          <span class="pf-resumen-valor muted">$${data.total_invertido.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+        </div>
+        <div class="pf-resumen-item">
+          <span class="pf-resumen-label">Ganancia total</span>
+          <span class="pf-resumen-valor ${gTotalClass}">${gTotalSign}$${Math.abs(data.ganancia_total).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} (${gTotalSign}${data.ganancia_total_pct.toFixed(2)}%)</span>
+        </div>
+      </div>`;
+
+    if (data.items.length === 0) {
+      container.innerHTML = `
+        <div class="wl-empty">
+          <div class="wl-empty-icon">📊</div>
+          <p>Tu portfolio está vacío.</p>
+          <p class="wl-empty-sub">Agregá una posición abajo con el ticker, cantidad y precio de compra.</p>
+        </div>`;
+      return;
+    }
+
+    // Calcular distribución
+    const totalActual = data.total_actual || 1;
+
+    container.innerHTML = data.items.map(item => {
+      const gClass = item.ganancia >= 0 ? 'var-green' : 'var-red';
+      const gSign = item.ganancia >= 0 ? '+' : '';
+      const pct = ((item.valor_actual / totalActual) * 100).toFixed(1);
+      return `
+        <div class="pf-card">
+          <div class="pf-card-top">
+            <div class="pf-card-left">
+              <span class="wl-ticker">${item.ticker}</span>
+              <span class="wl-nombre">${item.nombre}</span>
+            </div>
+            <div class="pf-card-right">
+              <span class="wl-precio">$${item.precio_actual.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="wl-moneda">${item.moneda}</span></span>
+              <span class="wl-variacion ${gClass}">${gSign}${item.ganancia_pct.toFixed(2)}%</span>
+            </div>
+            <button class="wl-remove" onclick="eliminarPosicion('${item.ticker}')" title="Eliminar">✕</button>
+          </div>
+          <div class="pf-card-bottom">
+            <span class="pf-meta">${item.cantidad} acc · compra $${item.precio_compra.toLocaleString('en-US', {minimumFractionDigits: 2})} · valor $${item.valor_actual.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+            <span class="pf-meta ${gClass}">${gSign}$${Math.abs(item.ganancia).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+            <div class="pf-dist-bar-track"><div class="pf-dist-bar-fill" style="width:${pct}%"></div></div>
+            <span class="pf-dist-pct">${pct}% del portfolio</span>
+          </div>
+        </div>`;
+    }).join('');
+
+  } catch (err) {
+    container.innerHTML = '<div class="wl-loading">❌ Error al conectar con el servidor.</div>';
+  }
+}
+
+async function agregarPosicion() {
+  const ticker = document.getElementById('pf-ticker').value.trim().toUpperCase();
+  const cantidad = parseFloat(document.getElementById('pf-cantidad').value);
+  const precioCompra = parseFloat(document.getElementById('pf-precio').value);
+
+  if (!ticker || isNaN(cantidad) || isNaN(precioCompra) || cantidad <= 0 || precioCompra <= 0) return;
+
+  document.getElementById('pf-ticker').value = '';
+  document.getElementById('pf-cantidad').value = '';
+  document.getElementById('pf-precio').value = '';
+
+  const res = await fetch(`${BASE_URL}/portfolio`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ticker, cantidad, precio_compra: precioCompra })
+  });
+  const data = await res.json();
+  if (data.error) {
+    alert(data.error);
+    return;
+  }
+  cargarPortfolio();
+}
+
+async function eliminarPosicion(ticker) {
+  await fetch(`${BASE_URL}/portfolio/${ticker}`, { method: 'DELETE' });
+  cargarPortfolio();
+}

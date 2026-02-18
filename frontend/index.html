@@ -6,7 +6,7 @@
   <title>FinBot — Asistente Financiero</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=11" />
+  <link rel="stylesheet" href="styles.css?v=12" />
 </head>
 <body>
 
@@ -113,24 +113,33 @@
         </div>
       </div>
 
-      <!-- ── PANTALLA PORTFOLIO (próximamente) ── -->
+      <!-- ── PANTALLA PORTFOLIO ── -->
       <div id="pantalla-portfolio" style="display:none; flex-direction:column; height:100%;">
         <div class="topbar">
           <div class="topbar-left">
             <h2>Portfolio</h2>
-            <span class="topbar-sub">Próximamente</span>
+            <span class="topbar-sub">Tus posiciones · Ganancia/pérdida en tiempo real</span>
           </div>
+          <button class="refresh-btn" onclick="cargarPortfolio()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Actualizar
+          </button>
         </div>
-        <div class="coming-soon">
-          <div class="cs-icon">🚧</div>
-          <h3>En construcción</h3>
-          <p>El tracker de portfolio está en camino.</p>
+        <div id="portfolioResumen"></div>
+        <div class="portfolio-wrap" id="portfolioContainer">
+          <div class="wl-loading">Cargando portfolio...</div>
+        </div>
+        <div class="pf-add-bar">
+          <input type="text" id="pf-ticker" class="pf-input-ticker" placeholder="Ticker" autocomplete="off"/>
+          <input type="number" id="pf-cantidad" class="pf-input-num" placeholder="Cantidad" min="0" step="any"/>
+          <input type="number" id="pf-precio" class="pf-input-num" placeholder="Precio compra" min="0" step="any"/>
+          <button onclick="agregarPosicion()">+ Agregar</button>
         </div>
       </div>
 
     </main>
   </div>
 
-  <script src="app.js?v=11"></script>
+  <script src="app.js?v=12"></script>
 </body>
 </html>
