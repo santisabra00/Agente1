@@ -38,16 +38,12 @@ function renderTexto(texto) {
 }
 
 function renderTextoPlano(texto) {
-  const lines = texto.split('\n');
-  let html = '';
-  for (const line of lines) {
-    if (!line.trim()) { html += '<br>'; continue; }
-    let l = line
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/(\+[\d.,]+%?)/g, '<span class="tag-green">$1</span>')
-      .replace(/(−[\d.,]+%?|-[\d.,]+%)/g, '<span class="tag-red">$1</span>');
-    html += `<p>${l}</p>`;
-  }
+  // Parsear Markdown con marked.js
+  let html = marked.parse(texto);
+  // Colorear números positivos/negativos después del parseo
+  html = html
+    .replace(/(\+[\d.,]+%?)/g, '<span class="tag-green">$1</span>')
+    .replace(/(−[\d.,]+%?|-[\d.,]+%)/g, '<span class="tag-red">$1</span>');
   return html;
 }
 
