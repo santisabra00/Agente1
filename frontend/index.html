@@ -20,15 +20,15 @@
       </div>
 
       <nav class="sidebar-nav">
-        <div class="nav-item active">
+        <div class="nav-item active" id="nav-chat" onclick="mostrarPantalla('chat')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           <span>Chat</span>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" id="nav-mercados" onclick="mostrarPantalla('mercados')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          <span>Mercados</span>
+          <span>Watchlist</span>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" id="nav-portfolio" onclick="mostrarPantalla('portfolio')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
           <span>Portfolio</span>
         </div>
@@ -43,55 +43,85 @@
     <!-- MAIN -->
     <main class="main">
 
-      <!-- TOPBAR -->
-      <div class="topbar">
-        <div class="topbar-left">
-          <h2>Asistente Financiero</h2>
-          <span class="topbar-sub">Precios en tiempo real · Análisis · Comparaciones</span>
+      <!-- ── PANTALLA CHAT ── -->
+      <div id="pantalla-chat">
+        <div class="topbar">
+          <div class="topbar-left">
+            <h2>Asistente Financiero</h2>
+            <span class="topbar-sub">Precios en tiempo real · Análisis · Comparaciones</span>
+          </div>
+          <div class="topbar-right">
+            <div class="market-badge up">S&P 500 ▲</div>
+            <div class="market-badge">BTC ◆</div>
+          </div>
         </div>
-        <div class="topbar-right">
-          <div class="market-badge up">S&P 500 ▲</div>
-          <div class="market-badge">BTC ◆</div>
-        </div>
-      </div>
 
-      <!-- CHAT -->
-      <div class="chat-wrap" id="chatContainer">
-
-        <!-- Mensaje de bienvenida -->
-        <div class="msg-group bot">
-          <div class="msg-avatar">F</div>
-          <div class="msg-content">
-            <div class="msg-bubble">
-              <p>Hola 👋 Soy <strong>FinBot</strong>, tu asistente financiero personal.</p>
-              <p>Puedo ayudarte con precios en tiempo real, análisis de empresas y comparaciones entre activos.</p>
-            </div>
-            <div class="quick-actions">
-              <button class="qa-btn" onclick="enviarSugerencia('¿Cuál es el precio de Apple?')">🍎 Apple</button>
-              <button class="qa-btn" onclick="enviarSugerencia('¿Cómo está Bitcoin hoy?')">₿ Bitcoin</button>
-              <button class="qa-btn" onclick="enviarSugerencia('Compará SPY vs QQQ')">⚔️ SPY vs QQQ</button>
-              <button class="qa-btn" onclick="enviarSugerencia('Info de Tesla')">🚗 Tesla</button>
-              <button class="qa-btn" onclick="enviarSugerencia('¿Cómo está el Merval hoy?')">🇦🇷 Merval</button>
+        <div class="chat-wrap" id="chatContainer">
+          <div class="msg-group bot">
+            <div class="msg-avatar">F</div>
+            <div class="msg-content">
+              <div class="msg-bubble">
+                <p>Hola 👋 Soy <strong>FinBot</strong>, tu asistente financiero personal.</p>
+                <p>Puedo ayudarte con precios en tiempo real, análisis de empresas y comparaciones entre activos.</p>
+              </div>
+              <div class="quick-actions">
+                <button class="qa-btn" onclick="enviarSugerencia('¿Cuál es el precio de Apple?')">🍎 Apple</button>
+                <button class="qa-btn" onclick="enviarSugerencia('¿Cómo está Bitcoin hoy?')">₿ Bitcoin</button>
+                <button class="qa-btn" onclick="enviarSugerencia('Compará SPY vs QQQ')">⚔️ SPY vs QQQ</button>
+                <button class="qa-btn" onclick="enviarSugerencia('Info de Tesla')">🚗 Tesla</button>
+                <button class="qa-btn" onclick="enviarSugerencia('Agregá AAPL a mi watchlist')">+ Watchlist</button>
+              </div>
             </div>
           </div>
         </div>
 
+        <div class="input-wrap">
+          <div class="input-box">
+            <input type="text" id="inputMensaje" placeholder="Preguntá sobre cualquier acción, ETF o cripto..." autocomplete="off"/>
+            <button id="btnEnviar" onclick="enviarMensaje()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+          <p class="input-disclaimer">FinBot provee información objetiva, no consejos de inversión.</p>
+        </div>
       </div>
 
-      <!-- INPUT -->
-      <div class="input-wrap">
-        <div class="input-box">
-          <input
-            type="text"
-            id="inputMensaje"
-            placeholder="Preguntá sobre cualquier acción, ETF o cripto..."
-            autocomplete="off"
-          />
-          <button id="btnEnviar" onclick="enviarMensaje()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      <!-- ── PANTALLA WATCHLIST ── -->
+      <div id="pantalla-mercados" style="display:none; flex-direction:column; height:100%;">
+        <div class="topbar">
+          <div class="topbar-left">
+            <h2>Mi Watchlist</h2>
+            <span class="topbar-sub">Tus activos favoritos · Actualización en tiempo real</span>
+          </div>
+          <button class="refresh-btn" onclick="cargarWatchlist()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Actualizar
           </button>
         </div>
-        <p class="input-disclaimer">FinBot provee información objetiva, no consejos de inversión.</p>
+
+        <div class="watchlist-wrap" id="watchlistContainer">
+          <div class="wl-loading">Cargando tu watchlist...</div>
+        </div>
+
+        <div class="wl-add-bar">
+          <input type="text" id="inputTicker" placeholder="Agregar ticker (ej: AAPL, BTC-USD)" autocomplete="off"/>
+          <button onclick="agregarDesdeInput()">+ Agregar</button>
+        </div>
+      </div>
+
+      <!-- ── PANTALLA PORTFOLIO (próximamente) ── -->
+      <div id="pantalla-portfolio" style="display:none; flex-direction:column; height:100%;">
+        <div class="topbar">
+          <div class="topbar-left">
+            <h2>Portfolio</h2>
+            <span class="topbar-sub">Próximamente</span>
+          </div>
+        </div>
+        <div class="coming-soon">
+          <div class="cs-icon">🚧</div>
+          <h3>En construcción</h3>
+          <p>El tracker de portfolio está en camino.</p>
+        </div>
       </div>
 
     </main>

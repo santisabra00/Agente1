@@ -1,4 +1,5 @@
 const API_URL = 'http://localhost:8000/chat';
+const BASE_URL = 'http://localhost:8000';
 
 const chatContainer = document.getElementById('chatContainer');
 const inputMensaje  = document.getElementById('inputMensaje');
@@ -197,3 +198,93 @@ function enviarSugerencia(texto) {
   inputMensaje.value = texto;
   enviarMensaje();
 }
+
+// ─── NAVEGACIÓN ──────────────────────────────
+function mostrarPantalla(nombre) {
+  ['chat', 'mercados', 'portfolio'].forEach(p => {
+    const pantalla = document.getElementById(`pantalla-${p}`);
+    const nav = document.getElementById(`nav-${p}`);
+    if (p === nombre) {
+      pantalla.style.display = 'flex';
+      pantalla.style.flexDirection = 'column';
+      pantalla.style.height = '100%';
+      nav.classList.add('active');
+    } else {
+      pantalla.style.display = 'none';
+      nav.classList.remove('active');
+    }
+  });
+
+  if (nombre === 'mercados') cargarWatchlist();
+}
+
+// ─── WATCHLIST ───────────────────────────────
+async function cargarWatchlist() {
+  const container = document.getElementById('watchlistContainer');
+  container.innerHTML = '<div class="wl-loading">Cargando...</div>';
+
+  try {
+    const res = await fetch(`${BASE_URL}/watchlist`);
+    const data = await res.json();
+
+    if (data.items.length === 0) {
+      container.innerHTML = `
+        <div class="wl-empty">
+          <div class="wl-empty-icon">📋</div>
+          <p>Tu watchlist está vacía.</p>
+          <p class="wl-empty-sub">Agregá un ticker abajo o decile al agente<br>"Agregá Apple a mi watchlist"</p>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = data.items.map(item => {
+      const varClass = item.variacion >= 0 ? 'var-green' : 'var-red';
+      const varSign = item.variacion >= 0 ? '+' : '';
+      return `
+        <div class="wl-card">
+          <div class="wl-card-left">
+            <span class="wl-ticker">${item.ticker}</span>
+            <span class="wl-nombre">${item.nombre}</span>
+          </div>
+          <div class="wl-card-right">
+            <span class="wl-precio">$${item.precio} <span class="wl-moneda">${item.moneda}</span></span>
+            <span class="wl-variacion ${varClass}">${varSign}${item.variacion}%</span>
+          </div>
+          <button class="wl-remove" onclick="eliminarTicker('${item.ticker}')" title="Eliminar">✕</button>
+        </div>`;
+    }).join('');
+
+  } catch (err) {
+    container.innerHTML = '<div class="wl-loading">❌ Error al conectar con el servidor.</div>';
+  }
+}
+
+async function agregarDesdeInput() {
+  const input = document.getElementById('inputTicker');
+  const ticker = input.value.trim().toUpperCase();
+  if (!ticker) return;
+
+  input.value = '';
+  await fetch(`${BASE_URL}/watchlist`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ticker })
+  });
+
+  cargarWatchlist();
+}
+
+async function eliminarTicker(ticker) {
+  await fetch(`${BASE_URL}/watchlist/${ticker}`, { method: 'DELETE' });
+  cargarWatchlist();
+}
+
+// Enter en el input de watchlist
+document.addEventListener('DOMContentLoaded', () => {
+  const inputTicker = document.getElementById('inputTicker');
+  if (inputTicker) {
+    inputTicker.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') agregarDesdeInput();
+    });
+  }
+});

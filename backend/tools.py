@@ -5,6 +5,7 @@ import yfinance as yf
 import numpy as np
 import json
 from datetime import datetime
+from watchlist import agregar_ticker, eliminar_ticker, obtener_watchlist
 
 # ─────────────────────────────────────────
 # FUNCIONES
@@ -183,6 +184,21 @@ def obtener_analisis_tecnico(ticker: str) -> str:
         return f"Error al calcular indicadores de {ticker}: {str(e)}"
 
 
+def agregar_a_watchlist(ticker: str) -> str:
+    """Agrega un ticker a la watchlist del usuario"""
+    return agregar_ticker(ticker)
+
+def eliminar_de_watchlist(ticker: str) -> str:
+    """Elimina un ticker de la watchlist del usuario"""
+    return eliminar_ticker(ticker)
+
+def ver_watchlist() -> str:
+    """Devuelve la watchlist actual del usuario"""
+    tickers = obtener_watchlist()
+    if not tickers:
+        return "Tu watchlist está vacía. Podés agregar activos diciéndome 'agregá AAPL a mi watchlist'."
+    return f"Tu watchlist tiene: {', '.join(tickers)}"
+
 def obtener_hora() -> str:
     """Devuelve la fecha y hora actual"""
     ahora = datetime.now()
@@ -255,6 +271,36 @@ TOOLS = [
         }
     },
     {
+        "name": "agregar_a_watchlist",
+        "description": "Agrega un activo a la watchlist del usuario. Usar cuando dice 'agregá X a mi watchlist' o 'seguí X'.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "ticker": {"type": "string", "description": "Símbolo del activo. Ej: AAPL, BTC-USD, SPY"}
+            },
+            "required": ["ticker"]
+        }
+    },
+    {
+        "name": "eliminar_de_watchlist",
+        "description": "Elimina un activo de la watchlist del usuario. Usar cuando dice 'sacá X de mi watchlist' o 'dejá de seguir X'.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "ticker": {"type": "string", "description": "Símbolo del activo a eliminar"}
+            },
+            "required": ["ticker"]
+        }
+    },
+    {
+        "name": "ver_watchlist",
+        "description": "Muestra los activos que el usuario tiene en su watchlist.",
+        "input_schema": {
+            "type": "object",
+            "properties": {}
+        }
+    },
+    {
         "name": "obtener_hora",
         "description": "Devuelve la fecha y hora actual.",
         "input_schema": {
@@ -275,6 +321,12 @@ def ejecutar_tool(nombre: str, inputs: dict) -> str:
         return comparar_activos(inputs["ticker1"], inputs["ticker2"])
     elif nombre == "obtener_analisis_tecnico":
         return obtener_analisis_tecnico(inputs["ticker"])
+    elif nombre == "agregar_a_watchlist":
+        return agregar_a_watchlist(inputs["ticker"])
+    elif nombre == "eliminar_de_watchlist":
+        return eliminar_de_watchlist(inputs["ticker"])
+    elif nombre == "ver_watchlist":
+        return ver_watchlist()
     elif nombre == "obtener_hora":
         return obtener_hora()
     else:

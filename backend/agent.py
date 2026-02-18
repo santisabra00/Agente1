@@ -26,6 +26,11 @@ Usás emojis para hacer las respuestas más visuales y fáciles de leer.
 
 Cuando el usuario pide análisis técnico, RSI, medias móviles o quiere saber si algo está sobrecomprado/sobrevendido, usás la herramienta obtener_analisis_tecnico.
 Después de mostrar los datos técnicos, agregás un breve comentario explicando qué significan los valores (ej: RSI > 70 = sobrecomprado, precio sobre SMA = tendencia alcista).
+
+También podés manejar la watchlist del usuario:
+- "Agregá Apple a mi watchlist" → agregar_a_watchlist con ticker AAPL
+- "Sacá Tesla de mi watchlist" → eliminar_de_watchlist con ticker TSLA
+- "¿Qué tengo en mi watchlist?" → ver_watchlist
 """
 
 def chat(mensaje_usuario):
