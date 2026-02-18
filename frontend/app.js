@@ -47,7 +47,7 @@ function formatInline(text) {
 }
 
 function renderTextoPlano(texto) {
-  const lines = texto.split('\n');
+  const lines = texto.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
   let html = '';
   let listBuf = [];
   let listType = null;
