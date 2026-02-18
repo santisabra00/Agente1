@@ -37,13 +37,80 @@ function renderTexto(texto) {
   return renderTextoPlano(texto);
 }
 
-function renderTextoPlano(texto) {
-  // Parsear Markdown con marked.js
-  let html = marked.parse(texto);
-  // Colorear números positivos/negativos después del parseo
-  html = html
+function formatInline(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/`(.*?)`/g, '<code>$1</code>')
     .replace(/(\+[\d.,]+%?)/g, '<span class="tag-green">$1</span>')
     .replace(/(−[\d.,]+%?|-[\d.,]+%)/g, '<span class="tag-red">$1</span>');
+}
+
+function renderTextoPlano(texto) {
+  const lines = texto.split('\n');
+  let html = '';
+  let listBuf = [];
+  let listType = null;
+  let tableBuf = [];
+  let inTable = false;
+
+  function flushList() {
+    if (listBuf.length) {
+      const tag = listType === 'ol' ? 'ol' : 'ul';
+      html += `<${tag}>` + listBuf.map(l => `<li>${l}</li>`).join('') + `</${tag}>`;
+      listBuf = []; listType = null;
+    }
+  }
+  function flushTable() {
+    if (tableBuf.length) {
+      let th = tableBuf[0];
+      let rows = tableBuf.slice(2); // skip separator row
+      html += '<table><thead><tr>' + th.map(c => `<th>${formatInline(c)}</th>`).join('') + '</tr></thead>';
+      if (rows.length) html += '<tbody>' + rows.map(r => '<tr>' + r.map(c => `<td>${formatInline(c)}</td>`).join('') + '</tr>').join('') + '</tbody>';
+      html += '</table>';
+      tableBuf = []; inTable = false;
+    }
+  }
+
+  for (const line of lines) {
+    const t = line.trim();
+
+    // Tabla
+    if (t.startsWith('|')) {
+      inTable = true;
+      const cells = t.split('|').slice(1, -1).map(c => c.trim());
+      tableBuf.push(cells);
+      continue;
+    } else if (inTable) { flushTable(); }
+
+    // Títulos
+    if (/^### (.+)/.test(t)) { flushList(); html += `<h3>${formatInline(t.replace(/^### /, ''))}</h3>`; continue; }
+    if (/^## (.+)/.test(t))  { flushList(); html += `<h2>${formatInline(t.replace(/^## /, ''))}</h2>`; continue; }
+    if (/^# (.+)/.test(t))   { flushList(); html += `<h1>${formatInline(t.replace(/^# /, ''))}</h1>`; continue; }
+
+    // HR
+    if (/^---+$/.test(t)) { flushList(); html += '<hr>'; continue; }
+
+    // Lista desordenada
+    if (/^[-*] (.+)/.test(t)) {
+      if (listType !== 'ul') { flushList(); listType = 'ul'; }
+      listBuf.push(formatInline(t.replace(/^[-*] /, '')));
+      continue;
+    }
+    // Lista ordenada
+    if (/^\d+\. (.+)/.test(t)) {
+      if (listType !== 'ol') { flushList(); listType = 'ol'; }
+      listBuf.push(formatInline(t.replace(/^\d+\. /, '')));
+      continue;
+    }
+
+    flushList();
+    if (!t) { html += '<br>'; continue; }
+    html += `<p>${formatInline(line)}</p>`;
+  }
+
+  flushList();
+  flushTable();
   return html;
 }
 
