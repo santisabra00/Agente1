@@ -2,6 +2,8 @@
 # Herramientas financieras del agente
 
 import yfinance as yf
+import numpy as np
+import json
 from datetime import datetime
 
 # ─────────────────────────────────────────
@@ -117,6 +119,70 @@ def comparar_activos(ticker1: str, ticker2: str) -> str:
         return f"Error al comparar activos: {str(e)}"
 
 
+def obtener_analisis_tecnico(ticker: str) -> str:
+    """Calcula RSI, SMA20 y SMA50 para un activo"""
+    try:
+        activo = yf.Ticker(ticker.upper())
+        info = activo.info
+        nombre = info.get("shortName") or ticker.upper()
+        moneda = info.get("currency", "USD")
+
+        # Descargar 100 días de historial
+        hist = activo.history(period="100d")
+        if hist.empty or len(hist) < 20:
+            return f"No hay suficiente historial para calcular indicadores de {ticker.upper()}."
+
+        cierres = hist["Close"].values
+
+        # ── Precio actual ──
+        precio_actual = float(cierres[-1])
+
+        # ── RSI (14 períodos) ──
+        deltas = np.diff(cierres)
+        gains = np.where(deltas > 0, deltas, 0)
+        losses = np.where(deltas < 0, -deltas, 0)
+        avg_gain = np.mean(gains[-14:])
+        avg_loss = np.mean(losses[-14:])
+        if avg_loss == 0:
+            rsi = 100.0
+        else:
+            rs = avg_gain / avg_loss
+            rsi = round(100 - (100 / (1 + rs)), 2)
+
+        # ── SMA20 y SMA50 ──
+        sma20 = round(float(np.mean(cierres[-20:])), 2)
+        sma50 = round(float(np.mean(cierres[-50:])), 2) if len(cierres) >= 50 else None
+
+        # ── Señales ──
+        if rsi >= 70:
+            rsi_signal = "sobrecomprado"
+        elif rsi <= 30:
+            rsi_signal = "sobrevendido"
+        else:
+            rsi_signal = "neutral"
+
+        sma20_signal = "arriba" if precio_actual > sma20 else "abajo"
+        sma50_signal = ("arriba" if precio_actual > sma50 else "abajo") if sma50 else None
+
+        datos = {
+            "ticker": ticker.upper(),
+            "nombre": nombre,
+            "precio": round(precio_actual, 2),
+            "moneda": moneda,
+            "rsi": rsi,
+            "rsi_signal": rsi_signal,
+            "sma20": sma20,
+            "sma20_signal": sma20_signal,
+            "sma50": sma50,
+            "sma50_signal": sma50_signal,
+        }
+
+        return f"[TECNICO]{json.dumps(datos)}"
+
+    except Exception as e:
+        return f"Error al calcular indicadores de {ticker}: {str(e)}"
+
+
 def obtener_hora() -> str:
     """Devuelve la fecha y hora actual"""
     ahora = datetime.now()
@@ -175,6 +241,20 @@ TOOLS = [
         }
     },
     {
+        "name": "obtener_analisis_tecnico",
+        "description": "Calcula indicadores técnicos de un activo: RSI (14 períodos), SMA20 y SMA50. Usar cuando el usuario pide análisis técnico, RSI, medias móviles o quiere saber si un activo está sobrecomprado/sobrevendido.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "ticker": {
+                    "type": "string",
+                    "description": "El símbolo del activo. Ejemplos: AAPL, BTC-USD, SPY, MELI"
+                }
+            },
+            "required": ["ticker"]
+        }
+    },
+    {
         "name": "obtener_hora",
         "description": "Devuelve la fecha y hora actual.",
         "input_schema": {
@@ -193,6 +273,8 @@ def ejecutar_tool(nombre: str, inputs: dict) -> str:
         return obtener_info_fundamental(inputs["ticker"])
     elif nombre == "comparar_activos":
         return comparar_activos(inputs["ticker1"], inputs["ticker2"])
+    elif nombre == "obtener_analisis_tecnico":
+        return obtener_analisis_tecnico(inputs["ticker"])
     elif nombre == "obtener_hora":
         return obtener_hora()
     else:

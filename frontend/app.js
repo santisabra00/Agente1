@@ -13,28 +13,97 @@ inputMensaje.addEventListener('keydown', (e) => {
 });
 
 // ─── RENDERIZADO DE TEXTO ────────────────────
-// Convierte el texto del agente en HTML con colores y formato
 function renderTexto(texto) {
-  const lines = texto.split('\n');
-  let html = '';
+  // Detectar si es una tarjeta técnica
+  if (texto.includes('[TECNICO]')) {
+    const partes = texto.split('[TECNICO]');
+    let html = '';
 
-  for (const line of lines) {
-    if (!line.trim()) {
-      html += '<br>';
-      continue;
+    for (const parte of partes) {
+      if (!parte.trim()) continue;
+      // Intentar parsear como JSON (datos técnicos)
+      try {
+        const datos = JSON.parse(parte.trim());
+        html += renderTarjetaTecnica(datos);
+      } catch {
+        // Es texto normal antes/después de la tarjeta
+        html += renderTextoPlano(parte);
+      }
     }
-
-    let l = line
-      // **negrita**
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      // números en verde/rojo según signo
-      .replace(/(\+[\d.,]+%?)/g, '<span class="tag-green">$1</span>')
-      .replace(/(−[\d.,]+%?|-[\d.,]+%)/g, '<span class="tag-red">$1</span>');
-
-    html += `<p>${l}</p>`;
+    return html;
   }
 
+  return renderTextoPlano(texto);
+}
+
+function renderTextoPlano(texto) {
+  const lines = texto.split('\n');
+  let html = '';
+  for (const line of lines) {
+    if (!line.trim()) { html += '<br>'; continue; }
+    let l = line
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/(\+[\d.,]+%?)/g, '<span class="tag-green">$1</span>')
+      .replace(/(−[\d.,]+%?|-[\d.,]+%)/g, '<span class="tag-red">$1</span>');
+    html += `<p>${l}</p>`;
+  }
   return html;
+}
+
+function renderTarjetaTecnica(d) {
+  // RSI color y señal
+  const rsiColor = d.rsi >= 70 ? 'var(--red)' : d.rsi <= 30 ? 'var(--green)' : 'var(--text-muted)';
+  const rsiLabel = d.rsi >= 70 ? 'Sobrecomprado' : d.rsi <= 30 ? 'Sobrevendido' : 'Neutral';
+  const rsiLabelClass = d.rsi >= 70 ? 'signal-red' : d.rsi <= 30 ? 'signal-green' : 'signal-neutral';
+  const rsiFill = Math.round(d.rsi);
+
+  // SMA señales
+  const sma20Class = d.sma20_signal === 'arriba' ? 'signal-green' : 'signal-red';
+  const sma20Text = d.sma20_signal === 'arriba' ? '↑ Precio sobre SMA' : '↓ Precio bajo SMA';
+
+  const sma50Html = d.sma50 ? `
+    <div class="tech-indicator">
+      <span class="tech-label">SMA 50</span>
+      <span class="tech-value">$${d.sma50}</span>
+      <span class="signal-tag ${d.sma50_signal === 'arriba' ? 'signal-green' : 'signal-red'}">
+        ${d.sma50_signal === 'arriba' ? '↑ Alcista' : '↓ Bajista'}
+      </span>
+    </div>` : '';
+
+  return `
+    <div class="tech-card">
+      <div class="tech-header">
+        <div>
+          <span class="tech-ticker">${d.ticker}</span>
+          <span class="tech-nombre">${d.nombre}</span>
+        </div>
+        <div class="tech-precio">$${d.precio} <span class="tech-moneda">${d.moneda}</span></div>
+      </div>
+
+      <div class="tech-grid">
+        <div class="tech-indicator rsi-block">
+          <span class="tech-label">RSI (14)</span>
+          <span class="tech-value" style="color:${rsiColor}">${d.rsi}</span>
+          <div class="rsi-bar-track">
+            <div class="rsi-bar-fill" style="width:${rsiFill}%; background:${rsiColor}"></div>
+            <div class="rsi-zones">
+              <span style="left:30%"></span>
+              <span style="left:70%"></span>
+            </div>
+          </div>
+          <span class="signal-tag ${rsiLabelClass}">${rsiLabel}</span>
+        </div>
+
+        <div class="tech-indicator">
+          <span class="tech-label">SMA 20</span>
+          <span class="tech-value">$${d.sma20}</span>
+          <span class="signal-tag ${sma20Class}">${sma20Text}</span>
+        </div>
+
+        ${sma50Html}
+      </div>
+    </div>
+  `;
 }
 
 // ─── AGREGAR MENSAJE ─────────────────────────

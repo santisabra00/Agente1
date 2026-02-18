@@ -410,6 +410,126 @@ body {
   margin-top: 8px;
 }
 
+/* ─── TARJETA TÉCNICA ───────────────────────── */
+.tech-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 4px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.tech-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tech-ticker {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text);
+  margin-right: 6px;
+}
+
+.tech-nombre {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.tech-precio {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.tech-moneda {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.tech-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tech-indicator {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tech-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+.tech-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+/* RSI Bar */
+.rsi-bar-track {
+  position: relative;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  margin: 6px 0 4px;
+  overflow: visible;
+}
+
+.rsi-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.rsi-zones span {
+  position: absolute;
+  top: -3px;
+  width: 1px;
+  height: 12px;
+  background: var(--surface);
+}
+
+/* Signal Tags */
+.signal-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 500;
+  width: fit-content;
+}
+
+.signal-green {
+  background: #22c55e18;
+  color: var(--green);
+}
+
+.signal-red {
+  background: #ef444418;
+  color: var(--red);
+}
+
+.signal-neutral {
+  background: var(--surface);
+  color: var(--text-muted);
+}
+
 /* ─── RESPONSIVE ────────────────────────────── */
 @media (max-width: 600px) {
   .sidebar { display: none; }
