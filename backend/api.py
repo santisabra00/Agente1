@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from agent import chat
 from watchlist import obtener_watchlist, agregar_ticker, eliminar_ticker
+from memory import limpiar_historial
 from tools import obtener_precio
 import yfinance as yf
 
@@ -75,3 +76,11 @@ def add_to_watchlist(body: TickerBody):
 def remove_from_watchlist(ticker: str):
     resultado = eliminar_ticker(ticker)
     return {"mensaje": resultado}
+
+# ─── HISTORIAL ───────────────────────────────
+
+@app.post("/reset")
+def reset_historial():
+    """Borra el historial de conversación"""
+    limpiar_historial()
+    return {"mensaje": "Historial borrado. ¡Nueva conversación lista! 🧹"}

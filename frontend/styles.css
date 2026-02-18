@@ -179,6 +179,26 @@ body {
   font-weight: 500;
 }
 
+.reset-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-family: var(--font);
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.reset-btn:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
 .market-badge.up {
   color: var(--green);
   background: #22c55e10;

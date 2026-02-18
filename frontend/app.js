@@ -199,6 +199,35 @@ function enviarSugerencia(texto) {
   enviarMensaje();
 }
 
+// ─── RESET CHAT ───────────────────────────────
+async function resetearChat() {
+  try {
+    await fetch(`${BASE_URL}/reset`, { method: 'POST' });
+  } catch (err) {
+    // Si falla el reset en backend, igual limpiamos el frontend
+  }
+
+  // Limpiar el chat visual y mostrar el saludo inicial
+  chatContainer.innerHTML = `
+    <div class="msg-group bot">
+      <div class="msg-avatar">F</div>
+      <div class="msg-content">
+        <div class="msg-bubble">
+          <p>Hola 👋 Soy <strong>FinBot</strong>, tu asistente financiero personal.</p>
+          <p>Puedo ayudarte con precios en tiempo real, análisis de empresas y comparaciones entre activos.</p>
+        </div>
+        <div class="quick-actions">
+          <button class="qa-btn" onclick="enviarSugerencia('¿Cuál es el precio de Apple?')">🍎 Apple</button>
+          <button class="qa-btn" onclick="enviarSugerencia('¿Cómo está Bitcoin hoy?')">₿ Bitcoin</button>
+          <button class="qa-btn" onclick="enviarSugerencia('Compará SPY vs QQQ')">⚔️ SPY vs QQQ</button>
+          <button class="qa-btn" onclick="enviarSugerencia('Info de Tesla')">🚗 Tesla</button>
+          <button class="qa-btn" onclick="enviarSugerencia('Agregá AAPL a mi watchlist')">+ Watchlist</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 // ─── NAVEGACIÓN ──────────────────────────────
 function mostrarPantalla(nombre) {
   ['chat', 'mercados', 'portfolio'].forEach(p => {
