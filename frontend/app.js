@@ -1,5 +1,5 @@
-const API_URL = 'http://localhost:8000/chat';
-const BASE_URL = 'http://localhost:8000';
+const API_URL = 'https://agente1-production.up.railway.app/chat';
+const BASE_URL = 'https://agente1-production.up.railway.app';
 
 const chatContainer = document.getElementById('chatContainer');
 const inputMensaje  = document.getElementById('inputMensaje');
