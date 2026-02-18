@@ -3,55 +3,98 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>📈 Agente Financiero</title>
+  <title>FinBot — Asistente Financiero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-  <div class="app">
+  <div class="layout">
 
-    <header>
-      <div class="header-content">
-        <div class="logo">📈</div>
-        <div>
-          <h1>Agente Financiero</h1>
-          <span class="status">● En línea</span>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">F</div>
+        <span class="logo-text">FinBot</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-item active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span>Chat</span>
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span>Mercados</span>
+        </div>
+        <div class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          <span>Portfolio</span>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="status-dot"></div>
+        <span>Mercado activo</span>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <h2>Asistente Financiero</h2>
+          <span class="topbar-sub">Precios en tiempo real · Análisis · Comparaciones</span>
+        </div>
+        <div class="topbar-right">
+          <div class="market-badge up">S&P 500 ▲</div>
+          <div class="market-badge">BTC ◆</div>
         </div>
       </div>
-    </header>
 
-    <div class="chat-container" id="chatContainer">
-      <div class="message bot">
-        <div class="avatar">📈</div>
-        <div class="bubble">
-          ¡Hola! Soy tu asistente financiero. Puedo ayudarte con:<br><br>
-          📊 Precios de acciones, ETFs y cripto<br>
-          🔍 Información fundamental de empresas<br>
-          ⚔️ Comparación entre activos<br><br>
-          ¿Qué querés consultar hoy?
+      <!-- CHAT -->
+      <div class="chat-wrap" id="chatContainer">
+
+        <!-- Mensaje de bienvenida -->
+        <div class="msg-group bot">
+          <div class="msg-avatar">F</div>
+          <div class="msg-content">
+            <div class="msg-bubble">
+              <p>Hola 👋 Soy <strong>FinBot</strong>, tu asistente financiero personal.</p>
+              <p>Puedo ayudarte con precios en tiempo real, análisis de empresas y comparaciones entre activos.</p>
+            </div>
+            <div class="quick-actions">
+              <button class="qa-btn" onclick="enviarSugerencia('¿Cuál es el precio de Apple?')">🍎 Apple</button>
+              <button class="qa-btn" onclick="enviarSugerencia('¿Cómo está Bitcoin hoy?')">₿ Bitcoin</button>
+              <button class="qa-btn" onclick="enviarSugerencia('Compará SPY vs QQQ')">⚔️ SPY vs QQQ</button>
+              <button class="qa-btn" onclick="enviarSugerencia('Info de Tesla')">🚗 Tesla</button>
+              <button class="qa-btn" onclick="enviarSugerencia('¿Cómo está el Merval hoy?')">🇦🇷 Merval</button>
+            </div>
+          </div>
         </div>
+
       </div>
-    </div>
 
-    <div class="suggestions">
-      <button onclick="enviarSugerencia('¿Cuál es el precio de Apple?')">🍎 Apple</button>
-      <button onclick="enviarSugerencia('¿Cómo está Bitcoin hoy?')">₿ Bitcoin</button>
-      <button onclick="enviarSugerencia('Compará SPY vs QQQ')">⚔️ SPY vs QQQ</button>
-      <button onclick="enviarSugerencia('Info fundamental de Tesla')">🚗 Tesla</button>
-    </div>
+      <!-- INPUT -->
+      <div class="input-wrap">
+        <div class="input-box">
+          <input
+            type="text"
+            id="inputMensaje"
+            placeholder="Preguntá sobre cualquier acción, ETF o cripto..."
+            autocomplete="off"
+          />
+          <button id="btnEnviar" onclick="enviarMensaje()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+        <p class="input-disclaimer">FinBot provee información objetiva, no consejos de inversión.</p>
+      </div>
 
-    <div class="input-area">
-      <input
-        type="text"
-        id="inputMensaje"
-        placeholder="Preguntá sobre cualquier acción, ETF o cripto..."
-        autocomplete="off"
-      />
-      <button id="btnEnviar" onclick="enviarMensaje()">
-        <span>➤</span>
-      </button>
-    </div>
-
+    </main>
   </div>
 
   <script src="app.js"></script>
